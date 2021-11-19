@@ -1,0 +1,84 @@
+#!/usr/bin/env python3
+# vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
+
+# Setup App at https://developer.spotify.com and get your client id and secret.
+# Export your authentication information:
+#    export SPOTIPY_CLIENT_ID='your-id'
+#    export SPOTIPY_CLIENT_SECRET='your-secret'
+#    export SPOTIPY_REDIRECT_URI='http://127.0.0.1:19000'
+# NOTE: SPOTIPY_REDIRECT_URI must match Redirect URI at developer.spotify.com 
+
+import sys
+import csv
+
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
+from spotipy.oauth2 import SpotifyOAuth
+
+if len(sys.argv) < 2:
+    print(sys.argv[0] + " {playlist-file}")
+    sys.exit()
+
+playlist = sys.argv[1]
+
+auth_manager = SpotifyClientCredentials()
+scope = "playlist-read-private,playlist-modify-private"
+sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
+
+user_id = sp.me()['id']
+
+def get_playlist(user_id, name):
+    playlists = sp.user_playlists(user_id)
+
+    while playlists:
+        for i, pl in enumerate(playlists['items']):
+            print("%4d %s %s" % (i + 1 + playlists['offset'], pl['uri'],  pl['name']))
+            if pl['name'] == playlist:
+                print("Playlist '" + name + "' alreay exists")
+                return pl
+
+        if playlists['next']:
+            playlists = sp.next(playlists)
+        else:
+            playlists = None
+
+    return False
+
+def search_track(artist, song):
+    search = sp.search("{} - {}".format(artist, song))
+    tracks = search["tracks"]
+    track_items = tracks["items"]
+
+    if len(track_items) == 0:
+        return False
+
+    for t in track_items:
+        if t["type"] != "track":
+            continue
+
+    return t
+
+pl = get_playlist(user_id, playlist)
+
+if not pl:
+    print("playlist '" + playlist + "' not found, creating new")
+    pl = sp.user_playlist_create(user_id, playlist, public=False)
+
+with open(playlist) as p:
+    p_reader = csv.reader(p, delimiter='\t')
+    for entry in p_reader:
+        num, artist, song = entry
+
+        full_name = "{}. {} - {}".format(num, artist, song)
+        t = search_track(artist, song)
+
+        if t == False:
+            print("NOT FOUND: " + full_name)
+            continue
+
+        artists = [ sub['name'] for sub in t["artists"] ]
+        real_name = "{} - {}".format(', '.join(artists), t["name"])
+
+        sp.user_playlist_add_tracks(user_id, pl["id"], [t["id"]])
+
+        print("OK: " + full_name + " (" + real_name + ")")
