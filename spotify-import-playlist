@@ -45,7 +45,13 @@ def get_playlist(user_id, name):
     return False
 
 def search_track(artist, song):
-    search = sp.search("{} {}".format(artist, song))
+    bad_words = ['&', '(', ')', 'feat.']
+    search_string = "{} {}".format(artist, song)
+
+    for bad in bad_words :
+        search_string = search_string.replace(bad, '')
+
+    search = sp.search(search_string)
     tracks = search["tracks"]
     track_items = tracks["items"]
 
