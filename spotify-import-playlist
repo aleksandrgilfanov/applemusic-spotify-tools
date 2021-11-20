@@ -15,6 +15,13 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.oauth2 import SpotifyOAuth
 
+variants = [
+    ['Хаски' ,'Husky'],
+    ['Шарлот', 'Sharlot'],
+    ['Célé', 'Cele'],
+    ['GIVĒON', 'Giveon']
+]
+
 if len(sys.argv) < 2:
     print(sys.argv[0] + " {playlist-file}")
     sys.exit()
@@ -44,11 +51,29 @@ def get_playlist(user_id, name):
 
     return False
 
+def compare_variants(variants, string):
+    for artist in variants:
+        if artist.lower() in string:
+            return True
+
+    return False
+
+def check_artist_variants(artist, string):
+    for avars in variants:
+        for a in avars:
+            if a.lower() == artist.lower():
+                return compare_variants(avars, string)
+
+    return False
+
 def is_artist_in_string(artist, string):
     artist = artist.lower()
     string = string.lower()
 
-    return artist in string
+    if artist in string:
+        return True
+
+    return check_artist_variants(artist, string)
 
 # Check that there is no different artist (e.g. unwanted cover)
 def is_artists_correct(artists, search_string):
