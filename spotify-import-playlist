@@ -60,7 +60,7 @@ def is_artists_correct(artists, search_string):
     return True
 
 def search_track(artist, song):
-    bad_words = ['&', '(', ')', 'feat.']
+    bad_words = ['&', '(', ')', 'feat.', '[', ']']
     search_string = "{} {}".format(artist, song)
 
     for bad in bad_words:
