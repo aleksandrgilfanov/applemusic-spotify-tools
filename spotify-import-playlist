@@ -147,5 +147,3 @@ with open(playlist) as p:
         real_name = "{} - {}".format(', '.join(artists), t["name"])
 
         sp.user_playlist_add_tracks(user_id, pl["id"], [t["id"]])
-
-        print("OK: " + full_name + " (" + real_name + ")")
