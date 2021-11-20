@@ -119,6 +119,11 @@ def search_track(artist, song):
 
         return t
 
+    # otherwise return first result
+    for t in track_items:
+        if t["type"] == "track":
+            return t
+
     return False
 
 pl = get_playlist(user_id, playlist)
