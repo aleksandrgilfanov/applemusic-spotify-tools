@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+
+import os.path
+import os
+import pickle
+import time
+from libpytunes import Library
+
+lib_path = "Library.xml"
+out_dir = "playlists"
+pickle_file = "itl.p"
+expiry = 60 * 60  # Refresh pickled file if older than
+epoch_time = int(time.time())  # Now
+
+os.mkdir(out_dir)
+
+# Generate pickled version of database if stale or doesn't exist
+if not os.path.isfile(pickle_file) or os.path.getmtime(pickle_file) + expiry < epoch_time:
+    itl_source = Library(lib_path)
+    pickle.dump(itl_source, open(pickle_file, "wb"))
+
+itl = pickle.load(open(pickle_file, "rb"))
+
+playlists=itl.getPlaylistNames()
+
+for playlist in playlists:
+    p = itl.getPlaylist(playlist)
+
+    # Skip unnecessary iTunes entries like Downloads and Audiobooks
+    if p.distinguished_kind != None:
+        continue
+    # Skip playlist folders
+    if p.is_folder:
+        continue
+
+    # Replace / to _, because it is not supported in filenames
+    filename = out_dir + "/" + p.name.replace("/", "_")
+
+    with open(filename, 'w') as f:
+        num = 1;
+        for song in p.tracks:
+            f.write("{t}\t{a}\t{n}\n".format(t=num, a=song.artist, n=song.name))
+            num += 1
