@@ -54,7 +54,7 @@ def is_artists_correct(artists, search_string):
             names = [a['name']]
 
         for name in names:
-            if not name in search_string:
+            if not name.lower() in search_string.lower():
                 return False
 
     return True
