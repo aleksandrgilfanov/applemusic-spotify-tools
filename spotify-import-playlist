@@ -102,7 +102,7 @@ def get_search_results(search_string):
 
     return track_items
 
-def search_track(artist, song):
+def generate_query(artist, song):
     bad_words = ['&', '(', ')', 'feat.', '[', ']', 'Mixed']
     search_string = "{} {}".format(artist, song)
 
@@ -112,6 +112,9 @@ def search_track(artist, song):
     # replace unicode curly apostrophe to ASCII apostrophe
     search_string = search_string.replace("’", "'")
 
+    return search_string
+
+def search_track(search_string):
     tracks = get_search_results(search_string)
     if tracks == False:
         return False;
@@ -130,6 +133,19 @@ def search_track(artist, song):
         if t["type"] == "track":
             return t
 
+    # try more generic search
+    specifics = ['Radio Edit', 'Remix', 'Extended Mix']
+    for word in specifics:
+        search_string = search_string.replace(word, '')
+
+    tracks = get_search_results(search_string)
+    if tracks == False:
+        return False;
+
+    for t in tracks:
+        if t["type"] == "track":
+            return t
+
     return False
 
 pl = get_playlist(user_id, playlist)
@@ -144,7 +160,8 @@ with open(playlist) as p:
         num, artist, song = entry
 
         full_name = "{}. {} - {}".format(num, artist, song)
-        t = search_track(artist, song)
+        query = generate_query(artist, song)
+        t = search_track(query)
 
         if t == False:
             print("NOT FOUND: " + full_name)
