@@ -65,7 +65,9 @@ def search_track(artist, song):
         if t["type"] != "track":
             continue
 
-    return t
+        return t
+
+    return False
 
 pl = get_playlist(user_id, playlist)
 
