@@ -114,6 +114,15 @@ def generate_query(artist, song):
 
     return search_string
 
+def make_query_more_generic(search_string):
+    # try more generic search
+    specifics = ['Radio Edit', 'Remix', 'Extended Mix']
+    for word in specifics:
+        search_string = search_string.replace(word, '')
+
+    return search_string
+
+
 def search_track(search_string):
     tracks = get_search_results(search_string)
     if tracks == False:
@@ -134,10 +143,7 @@ def search_track(search_string):
             return t
 
     # try more generic search
-    specifics = ['Radio Edit', 'Remix', 'Extended Mix']
-    for word in specifics:
-        search_string = search_string.replace(word, '')
-
+    search_string = make_query_more_generic(search_string)
     tracks = get_search_results(search_string)
     if tracks == False:
         return False;
