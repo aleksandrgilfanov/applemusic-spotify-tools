@@ -142,16 +142,6 @@ def search_track(search_string):
         if t["type"] == "track":
             return t
 
-    # try more generic search
-    search_string = make_query_more_generic(search_string)
-    tracks = get_search_results(search_string)
-    if tracks == False:
-        return False;
-
-    for t in tracks:
-        if t["type"] == "track":
-            return t
-
     return False
 
 pl = get_playlist(user_id, playlist)
@@ -170,8 +160,12 @@ with open(playlist) as p:
         t = search_track(query)
 
         if t == False:
-            print("NOT FOUND: " + full_name)
-            continue
+            # try more generic search
+            query = make_query_more_generic(query)
+            t = search_track(query)
+            if t == False:
+                print("NOT FOUND: " + full_name)
+                continue
 
         artists = [ sub['name'] for sub in t["artists"] ]
         real_name = "{} - {}".format(', '.join(artists), t["name"])
