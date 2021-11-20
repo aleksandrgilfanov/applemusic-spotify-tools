@@ -51,6 +51,9 @@ def search_track(artist, song):
     for bad in bad_words:
         search_string = search_string.replace(bad, '')
 
+    # replace unicode curly apostrophe to ASCII apostrophe
+    search_string = search_string.replace("’", "'")
+
     search = sp.search(search_string)
     tracks = search["tracks"]
     track_items = tracks["items"]
