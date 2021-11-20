@@ -44,6 +44,14 @@ def get_playlist(user_id, name):
 
     return False
 
+# Check that there is no different artist (e.g. unwanted cover)
+def is_artists_correct(artists, search_string):
+    for a in artists:
+        if not a['name'] in search_string:
+            return False
+
+    return True
+
 def search_track(artist, song):
     bad_words = ['&', '(', ')', 'feat.']
     search_string = "{} {}".format(artist, song)
@@ -63,6 +71,9 @@ def search_track(artist, song):
 
     for t in track_items:
         if t["type"] != "track":
+            continue
+
+        if not is_artists_correct(t['artists'], search_string):
             continue
 
         return t
