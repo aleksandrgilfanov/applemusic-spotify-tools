@@ -47,6 +47,8 @@ def get_playlist(user_id, name):
 # Check that there is no different artist (e.g. unwanted cover)
 def is_artists_correct(artists, search_string):
     for a in artists:
+        # replace to handle comma-separated artists like &-separated
+        a['name'] = a['name'].replace(", ", " & ")
         # split multiple artists if needed
         if " & " in a['name']:
             names = a['name'].split(" & ")
