@@ -48,7 +48,7 @@ def search_track(artist, song):
     bad_words = ['&', '(', ')', 'feat.']
     search_string = "{} {}".format(artist, song)
 
-    for bad in bad_words :
+    for bad in bad_words:
         search_string = search_string.replace(bad, '')
 
     search = sp.search(search_string)
