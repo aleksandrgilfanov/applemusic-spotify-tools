@@ -1,0 +1,18 @@
+#!/usr/bin/env python3
+# vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
+
+import os
+import subprocess
+import sys
+
+if len(sys.argv) < 2:
+    print(sys.argv[0] + " {dir-with-playlist-files}")
+    sys.exit()
+
+d = sys.argv[1]
+playlists = [f for f in os.listdir(d) if os.path.isfile(d + "/" + f)]
+
+for playlist in playlists:
+    full_path = d + "/" + playlist
+    print("### " + full_path)
+    subprocess.call(['./spotify-import-playlist', full_path])
