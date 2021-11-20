@@ -40,7 +40,6 @@ def get_playlist(user_id, name):
 
     while playlists:
         for i, pl in enumerate(playlists['items']):
-            print("%4d %s %s" % (i + 1 + playlists['offset'], pl['uri'],  pl['name']))
             if pl['name'] == playlist:
                 print("Playlist '" + name + "' already exists")
                 return pl
